@@ -1,25 +1,63 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "./App.css";
+import Table from "./MainTable";
+import DetailsPage from "./DetailsPage";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-function App() {
+const App = () => {
+  const [data, setData] = useState([
+    {
+      id: 1,
+      name: "Concept Development",
+      estimate: 0,
+      actual: 0,
+      subsections: [],
+    },
+    {
+      id: 2,
+      name: "Location Scouting",
+      estimate: 0,
+      actual: 0,
+      subsections: [],
+    },
+    { id: 3, name: "Crew Hiring", estimate: 0, actual: 0, subsections: [] },
+  ]);
+
+  const updateData = (id, updatedSubsections) => {
+    console.log(updatedSubsections);
+    let totalActual = updatedSubsections.reduce(
+      (acc, sub) => acc + sub.actual,
+      0
+    );
+    let totalEstimate = updatedSubsections.reduce(
+      (acc, sub) => acc + sub.estimate,
+      0
+    );
+    setData((prevData) =>
+      prevData.map((row) =>
+        row.id === parseInt(id)
+          ? {
+              ...row,
+              estimate: totalEstimate,
+              actual: totalActual,
+              subsections: updatedSubsections,
+            }
+          : row
+      )
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Table data={data} setData={setData} />} />
+        <Route
+          path="/details/:id"
+          element={<DetailsPage data={data} updateData={updateData} />}
+        />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
